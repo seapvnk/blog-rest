@@ -12,6 +12,7 @@ $db = (new Database())->connect();
 $post = new Post($db);
 
 $data = json_decode(file_get_contents("php://input"));
+auth($data->key) or die('ACCESS DENIED');
 
 $post->title = $data->title;
 $post->body = $data->body;

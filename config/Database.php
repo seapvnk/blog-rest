@@ -1,10 +1,12 @@
 <?php
 
+include '../../config/config.php';
+
 class Database {
-    private $host = 'localhost';
-    private $db_name = 'blog';
-    private $username = 'root';
-    private $password = '';
+    private $host = ENV['host'];
+    private $db_name = ENV['database'];
+    private $username = ENV['username'];
+    private $password = ENV['password'];
 
     private $conn;
 

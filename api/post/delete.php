@@ -23,6 +23,6 @@ if ($post->delete()) {
     ]);
 } else {
     echo json_encode([
-        'message' => 'Post not deleted'
+        'message' => 'Post not exists'
     ]);
 }

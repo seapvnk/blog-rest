@@ -37,6 +37,18 @@ class Post {
         return $statement;
     }
 
+    private function exists()
+    {
+        $query = "SELECT COUNT(id) as NUM FROM {$this->table} WHERE id = :id";
+        $statement = $this->conn->prepare($query);
+
+        $this->id = (int) htmlspecialchars(strip_tags($this->id));
+        $statement->bindParam(':id', $this->id);
+
+        $statement->execute();
+        return (bool) ((int) ($statement->fetch(PDO::FETCH_ASSOC))['NUM']);
+    }
+
     public function readOne() {
         $query = "
             SELECT 
@@ -134,6 +146,10 @@ class Post {
     }
 
     public function delete() {
+        if (!$this->exists()) {
+            return false;
+        }
+        
         $query = "DELETE FROM {$this->table} WHERE id = :id";
         $statement = $this->conn->prepare($query);
 

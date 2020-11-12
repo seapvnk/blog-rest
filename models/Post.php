@@ -27,7 +27,7 @@ class Post {
     }
 
 
-    public function read(int $page, int $results, int $categoryID = -1) {
+    public function read(int $page, int $results, int $categoryID) {
         if ($results > $this->maxPaginationResults) {
             $results = $this->maxPaginationResults;
         }

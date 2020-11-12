@@ -11,8 +11,9 @@ $post = new Post($db);
 
 $page = $_GET['p']?? 1;
 $resultsPerPage = $_GET['r']?? 4;
+$category = $_GET['c']?? -1;
 
-$result = $post->read((int) $page, (int) $resultsPerPage);
+$result = $post->read((int) $page, (int) $resultsPerPage, (int) $category);
 $num = $result["data"]->rowCount();
 
 if ($num > 0) {

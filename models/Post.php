@@ -3,6 +3,7 @@
 class Post {
     private $conn;
     private $table = 'posts';
+    private $maxPaginationResults = 25;
 
     public $id;
     public $category_id;
@@ -16,25 +17,54 @@ class Post {
         $this->conn = $db;
     }
 
-    public function read() {
+    private function count()
+    {
+        $query = "SELECT COUNT(id) as NUM FROM {$this->table}";
+        $statement = $this->conn->prepare($query);
+
+        $statement->execute();
+        return ((int) ($statement->fetch(PDO::FETCH_ASSOC))['NUM']);
+    }
+
+
+    public function read(int $page, int $results, int $categoryID = -1) {
+        if ($results > $this->maxPaginationResults) {
+            $results = $this->maxPaginationResults;
+        }
+
+        $offset = ($page-  1) * $results;
+        $totalRows = $this->count();
+        $totalPages = ceil($totalRows / $results);
         $query = "
             SELECT 
                 cat.name as category_name,
                 post.id,
                 post.category_id,
                 post.title,
-                post.body,
                 post.author,
                 post.created_at
             FROM {$this->table} post
             LEFT JOIN categories as cat
             ON post.category_id = cat.id
-            ORDER BY post.created_at DESC";
+        ";
+
+        if ($categoryID !== -1) {
+            $query .= " WHERE cat.id = $categoryID ";                
+        }
+
+        $query .= "ORDER BY post.created_at DESC
+                LIMIT $offset, $results";
 
         $statement = $this->conn->prepare($query);
         $statement->execute();
 
-        return $statement;
+        return [
+            "data" => $statement, 
+            "options" =>[
+                "results_per_page" => $results,
+                "total" => $totalPages
+            ]
+        ];
     }
 
     private function exists()
@@ -149,7 +179,7 @@ class Post {
         if (!$this->exists()) {
             return false;
         }
-        
+
         $query = "DELETE FROM {$this->table} WHERE id = :id";
         $statement = $this->conn->prepare($query);
 

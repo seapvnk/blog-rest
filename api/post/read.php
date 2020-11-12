@@ -9,19 +9,22 @@ include_once '../../models/Post.php';
 $db = (new Database())->connect();
 $post = new Post($db);
 
-$result = $post->read();
-$num = $result->rowCount();
+$page = $_GET['p']?? 1;
+$resultsPerPage = $_GET['r']?? 4;
+
+$result = $post->read((int) $page, (int) $resultsPerPage);
+$num = $result["data"]->rowCount();
 
 if ($num > 0) {
     $postArray = [];
+    $postArray['options'] = $result['options'];
     $postArray['data'] = [];
 
-    while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+    while ($row = $result["data"]->fetch(PDO::FETCH_ASSOC)) {
         extract($row);
         $postItem = [
             'id' => $id,
             'title' => $title,
-            'body' => html_entity_decode($body),
             'author' => $author,
             'category_id' => $category_id,
             'category_name' => $category_name,

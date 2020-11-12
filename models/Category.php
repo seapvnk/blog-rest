@@ -15,7 +15,7 @@ class Category {
         $query = "
             SELECT *
             FROM {$this->table}
-            ORDER BY name DESC";
+            ORDER BY name ASC";
 
         $statement = $this->conn->prepare($query);
         $statement->execute();

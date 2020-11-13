@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link rel="stylesheet" href="/public/css/styles.css">
+    <link rel="stylesheet" href="https://bootswatch.com/4/simplex/bootstrap.css">
     
     <script src="https://unpkg.com/vue"></script>
     <script src="https://unpkg.com/marked@0.3.6"></script>
@@ -13,67 +13,108 @@
     <link rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.3.2/styles/sunburst.min.css">
     <!-- CSS -->
-    <link rel="stylesheet" href="https://bootswatch.com/4/<?= $_POST['t'] ?? 'lux' ?>/bootstrap.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.3.2/highlight.min.js"></script> 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.0/axios.min.js"></script>
 
     <title>Create a post</title>
 </head>
 <body>
-    <div id="app" class="container">
-      <br>
-      <div class="row">
-        <div class="col">
-          <h1>create post</h1>
+  <div id="app">
+      <nav class="mb-4 navbar navbar-dark bg-dark">
+        <div class="container">
+          <a class="navbar-brand" href="#">Blog UI</a>
+          <a class="text-primary" @click="action = 'categories'">categories</a>
+          <a class="text-primary" @click="action = 'posts'">posts</a>
         </div>
-        <div class="col">
-          <select id="theme" class="form-control">
-            <option value="" disabled selected>Choose a theme</option>
-            <option v-for="theme in themes" @click="switchThemeTo(theme)" :value="theme">{{ theme }}</option>
-          </select>
+      </nav>
+
+      <div class="container" v-show="action === 'categories'">
+
+      <div class="container">
+        <h1>Create new category</h1>
+        <div class="row">
+          <div class="form-group col">
+            <label for="title">Name</label>
+            <input placeholder="category name" id="cat_name" v-model="newCategoryName" type="text" class="form-control">
+          </div>
+          <div class="form-group col">
+            <label for="title">Password</label>
+            <input placeholder="key" id="password" v-model="key" type="password" class="form-control">
+          </div>
         </div>
-      </div>
-      <div class="row">
-        <div class="form-group col">
-          <label for="title">Title</label>
-          <input placeholder="title" id="title" :value="title" type="text" class="form-control">
+        <div>
+          <button @click="createCategory" class="btn btn-success">
+            create
+          </button>
         </div>
-        <div class="form-group col">
-          <label for="title">Author</label>
-          <input placeholder="author" id="author" :value="author" type="text" class="form-control">
-        </div>
-      </div>
-      <div class="row">
-        <div class="input-field col s6">
-          <label for="category">Category</label>
-          <select id="category" class="form-control">
-            <option value="" disabled selected>Choose your option</option>
-            <option v-for="category in categories" :value="category.id">{{ category.name }}</option>
-          </select>
-        </div>
-        <div class="input-field col s6">
-          <label for="title">Password</label>
-          <input placeholder="password" id="password" :value="key" type="password" class="form-control">
-        </div>
-      </div>
-  
-      <br>
-      <div class="row">
-        <div class="col">
-          <textarea 
-            style="height: 50vh; resize: none;" 
-            class="input form-control" 
-            :value="body" 
-            @input="update"></textarea>
-        </div>
-        <div class="col">
-          <div style="height: 50vh; overflow: auto;" v-html="compiledMarkdown"></div>
-        </div>
+        <br>
       </div>
 
-      <br>  
-      <div>
-        <button @click="send" class="btn btn-success">Create</button>
+      <table class="table table-striped table-hover">
+        <thead class="thead-dark">
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Category name</th>
+            <th scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="category in categories">
+            <td>{{ category.id }}</td>
+            <td>{{ category.name }}</td>
+            <td>delete</td>
+          </tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div  class="container" v-show="action === 'posts'">
+        <div class="row">
+          <div class="form-group col">
+            <label for="title">Title</label>
+            <input placeholder="title" id="title" v-model="title" type="text" class="form-control">
+          </div>
+          <div class="form-group col">
+            <label for="title">Author</label>
+            <input placeholder="author" id="author" v-model="author" type="text" class="form-control">
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s6">
+            <label for="category">Category</label>
+            <select id="category" class="form-control">
+              <option value="" disabled selected>Choose your option</option>
+              <option v-for="category in categories" :value="category.id">{{ category.name }}</option>
+            </select>
+          </div>
+          <div class="input-field col s6">
+            <label for="title">Password</label>
+            <input placeholder="password" id="password" v-model="key" type="Password" class="form-control">
+          </div>
+        </div>
+    
+        <br>
+        <div class="row">
+          <div class="col">
+            <textarea 
+              style="height: 50vh; resize: none;" 
+              class="input form-control" 
+              :value="body" 
+              @input="update"></textarea>
+          </div>
+          <div class="col">
+            <div 
+              style="height: 50vh; overflow: auto; border-radius: 5px;" 
+              class="border p-2 bg-light"
+              v-html="compiledMarkdown"
+            ></div>
+          </div>
+        </div>
+
+        <br>  
+        <div>
+          <button @click="createPost" class="btn btn-success">Create</button>
+        </div>
       </div>
     </div>
 <script>
@@ -89,13 +130,8 @@
             key: "your key",
             body: "# welcome",
             categories: [],
-            themes: [
-              'lux','darkly','spacelab','materia','cerulean',
-              'litera','sandstone','slate','superhero',
-              'cosmo','flatly','lumen','minty',
-              'simplex','solar','united','cyborg',
-              'journal','pulse','sketchy','yeti'
-            ]
+            action: "posts",
+            newCategoryName: "name your new category"
         },
         computed: {
           compiledMarkdown: function() {
@@ -115,29 +151,23 @@
             });
           }, 300),
 
-          switchThemeTo(theme) {
-            const form = document.createElement("form");
-            const themeName = document.createElement("input"); 
-            
-            form.method = "POST";
-            form.action = "#";   
-            
-            themeName.value = theme;
-            themeName.name = "t";
-
-            form.appendChild(themeName);  
-            document.body.appendChild(form);
-            form.submit();
+          createCategory() {
+            const { newCategoryName, key } = this;
+            axios({
+              method: 'post',
+              url: '/api/category/create.php',
+              data: { name: newCategoryName, key }
+            }).then(response => {
+              if (response.data === 'ACCESS DENIED') {
+                alert('incorrect input')
+              } else {
+                alert('category created')
+              }
+            })
           },
-          send() {
-            const {
-              title,
-              author,
-              category_id,
-              body,
-              key
-            } = this;
 
+          createPost() {
+            const { title, author, category_id, body, key } = this;
             axios({
               method: 'post',
               url: '/api/post/create.php',
@@ -146,9 +176,16 @@
                 author,
                 category_id,
                 body,
-                key
+                key,
+                newCategoryName,
               }
-            }).then(_ => alert('post created'))
+            }).then(response => {
+              if (response.data === 'ACCESS DENIED') {
+                alert('incorrect input')
+              } else {
+                alert('post created')
+              }
+            })
           }
         },
         beforeMount() {

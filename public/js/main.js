@@ -1,4 +1,4 @@
-hljs.initHighlightingOnLoad();
+hljs.initHighlightingOnLoad()
 
 new Vue({
     el: "#app",
@@ -6,10 +6,10 @@ new Vue({
         title: "Post title",
         author: "Pedro Sérgio",
         category_id: 1,
-        key: "your key",
+        key: "",
         body: "# welcome",
         categories: [],
-        action: "posts",
+        action: "categories",
         newCategoryName: "name your new category"
     },
     computed: {
@@ -28,21 +28,43 @@ new Vue({
                 document.querySelectorAll('pre code').forEach((block) => {
                     hljs.highlightBlock(block);
                 });
-            }, 300),
+            }, 
+        300),
 
-            createCategory() {
-                const { newCategoryName, key } = this;
+        createCategory() {
+            const { newCategoryName, key } = this;
+            
+            axios({
+                method: 'post',
+                url: '/api/category/create.php',
+                data: { name: newCategoryName, key }
+            }).then(response => {
+                if (response.data === 'ACCESS DENIED') {
+                    alert('incorrect input')
+                } else {
+                    alert('category created')
+                    location.reload()
+                }
+            })
+        },
+
+        deleteCategory(id) {
+            const { key } = this
+
+            if (confirm('delete this category?')) {
                 axios({
-                    method: 'post',
-                    url: '/api/category/create.php',
-                    data: { name: newCategoryName, key }
+                    method: 'delete',
+                    url: '/api/category/delete.php',
+                    data: { id, key }
                 }).then(response => {
                     if (response.data === 'ACCESS DENIED') {
                         alert('incorrect input')
                     } else {
-                        alert('category created')
+                        alert('category deleted')
+                        location.reload()
                     }
                 })
+            }
         },
 
         createPost() {

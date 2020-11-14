@@ -5,14 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="stylesheet" href="https://bootswatch.com/4/simplex/bootstrap.css">
+    <link rel="stylesheet" href="https://allyoucan.cloud/cdn/icofont/1.0.1/icofont.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.3.2/styles/sunburst.min.css">
     
     <script src="https://unpkg.com/vue"></script>
     <script src="https://unpkg.com/marked@0.3.6"></script>
     <script src="https://unpkg.com/lodash@4.16.0"></script>
-
-    <link rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.3.2/styles/sunburst.min.css">
-    <!-- CSS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.3.2/highlight.min.js"></script> 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.0/axios.min.js"></script>
 
@@ -24,7 +22,9 @@
         <div class="container">
           <a class="navbar-brand" href="#">Blog UI</a>
           <a class="text-primary" @click="action = 'categories'">categories</a>
-          <a class="text-primary" @click="action = 'posts'">posts</a>
+          <a class="text-primary" @click="action = 'create_post'">posts</a>
+          <a class="text-primary" @click="action = 'categories'">categories</a>
+          <a class="text-primary" @click="action = 'create_post'">posts</a>
         </div>
       </nav>
 
@@ -62,13 +62,17 @@
           <tr v-for="category in categories">
             <td>{{ category.id }}</td>
             <td>{{ category.name }}</td>
-            <td>delete</td>
+            <td>
+              <button class="btn btn-danger">
+                <i @click="deleteCategory(category.id)" class="icofont-ui-delete"></i>
+              </button>
+            </td>
           </tr>
         </tbody>
       </table>
       </div>
 
-      <div  class="container" v-show="action === 'posts'">
+      <div  class="container" v-show="action === 'create_post'">
         <div class="row">
           <div class="form-group col">
             <label for="title">Title</label>

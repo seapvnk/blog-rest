@@ -99,6 +99,25 @@ new Vue({
             this.body = "" 
         },
 
+        deletePost() {
+            const id = this.inputID
+            const key = this.key
+
+            if (confirm(`delete post with id ${id} ?`)) {
+                axios({
+                    data: {
+                        key,
+                        id,
+                    },
+                    method: 'delete',
+                    url: '/api/post/delete.php',
+                }).then(response => {
+                    this.clear()
+                    alert(response.data)
+                })
+            }
+        },
+
         createPost() {
             const { title, author, category_id, body, key, id } = this;
 

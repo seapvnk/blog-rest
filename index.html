@@ -35,7 +35,7 @@
         <h1>Create new category</h1>
         <div class="row">
           <div class="form-group col">
-            <label for="title">Name</label>
+            <label for="title">Category name</label>
             <input placeholder="category name" id="cat_name" v-model="newCategoryName" type="text" class="form-control">
           </div>
           <div class="form-group col pt-4">
@@ -91,9 +91,9 @@
             <label for="category">Edit a post</label>
             <div class="row container">
               <input placeholder="post id" min="0" id="edit" v-model="inputID" type="number" class="col-4 form-control">
-              <button @click="loadEditPost" class="col-2 mx-1 btn btn-info">edit</button>
-              <button @click="clear" class="col-2 mx-2 btn btn-dark">clear</button>
-              <button @click="clear" class="col-2 btn btn-danger">delete</button>
+              <button @click="loadEditPost" class="col-2 mx-1 btn btn-info"><i class="icofont-pencil-alt-2"></i></button>
+              <button @click="clear" class="col-2 mx-2 btn btn-dark"><i class="icofont-eraser"></i></button>
+              <button @click="deletePost" class="col-2 btn btn-danger"><i class="icofont-ui-delete"></i></button>
             </div>
           </div>
         </div>

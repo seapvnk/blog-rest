@@ -5,7 +5,9 @@ new Vue({
     data: {
         title: "Post title",
         author: "Pedro Sérgio",
-        category_id: 1,
+        category_id: -1,
+        id: -1,
+        inputID: '',
         key: "",
         body: "# welcome",
         categories: [],
@@ -17,7 +19,7 @@ new Vue({
             return marked(this.body, {
                 sanitize: true,
                 highlight: function(code) {
-                return hljs.highlightAuto(code).value;
+                    return hljs.highlightAuto(code).value;
                 }, 
             });
         }
@@ -30,6 +32,27 @@ new Vue({
                 });
             }, 
         300),
+
+        loadEditPost() {
+            axios({
+                method: 'get',
+                url: `/api/post/post.php?id=${this.inputID}`,
+            }).then(response => {
+                if (response.data === 'ACCESS DENIED') {
+                    alert('incorrect input')
+                } else {
+                    if (response.data.author) {
+                        this.id = response.data.id
+                        this.title = response.data.title
+                        this.body = response.data.body
+                        this.category_id = response.data.category_id
+                        this.author = response.data.author
+                    } else {
+                        alert('no post has been found.')
+                    }
+                }
+            })
+        },
 
         createCategory() {
             const { newCategoryName, key } = this;
@@ -66,24 +89,43 @@ new Vue({
                 })
             }
         },
+        
+        clear() {
+            this.title = "Post title"
+            this.author = "Pedro Sérgio"
+            this.category_id = -1
+            this.id = -1
+            this.inputID = ''
+            this.body = "" 
+        },
 
         createPost() {
-            const { title, author, category_id, body, key } = this;
+            const { title, author, category_id, body, key, id } = this;
+
+            const url = id > 0? '/api/post/update.php' : '/api/post/create.php'
+            const method = id > 0? 'PUT' : 'POST'
+
+            const data = {
+                title,
+                author,
+                category_id,
+                body,
+                key,
+            }
+
+            if (id > 0) {
+                data.id = id
+            }
+
             axios({
-                method: 'post',
-                url: '/api/post/create.php',
-                data: {
-                    title,
-                    author,
-                    category_id,
-                    body,
-                    key,
-                }
+                method,
+                url,
+                data,
             }).then(response => {
                 if (response.data === 'ACCESS DENIED') {
                     alert('incorrect input')
                 } else {
-                    alert('post created')
+                    alert(`post ${id > 0? 'updated' : 'created'}`)
                 }
             })
         }

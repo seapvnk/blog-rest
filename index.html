@@ -21,10 +21,11 @@
       <nav class="mb-4 navbar navbar-dark bg-dark">
         <div class="container">
           <a class="navbar-brand" href="#">Blog UI</a>
-          <a class="text-primary" @click="action = 'categories'">categories</a>
-          <a class="text-primary" @click="action = 'create_post'">posts</a>
-          <a class="text-primary" @click="action = 'categories'">categories</a>
-          <a class="text-primary" @click="action = 'create_post'">posts</a>
+          <div class="input-field col s6">
+            <input placeholder="password" id="password" v-model="key" type="Password" class="form-control">
+          </div>
+          <a class="btn btn-primary mr-3" @click="action = 'categories'">categories</a>
+          <a class="btn btn-primary" @click="action = 'create_post'">post</a>
         </div>
       </nav>
 
@@ -37,17 +38,12 @@
             <label for="title">Name</label>
             <input placeholder="category name" id="cat_name" v-model="newCategoryName" type="text" class="form-control">
           </div>
-          <div class="form-group col">
-            <label for="title">Password</label>
-            <input placeholder="key" id="password" v-model="key" type="password" class="form-control">
+          <div class="form-group col pt-4">
+            <button @click="createCategory" class="mt-1 btn btn-success">
+              create
+            </button>
           </div>
         </div>
-        <div>
-          <button @click="createCategory" class="btn btn-success">
-            create
-          </button>
-        </div>
-        <br>
       </div>
 
       <table class="table table-striped table-hover">
@@ -86,18 +82,24 @@
         <div class="row">
           <div class="input-field col s6">
             <label for="category">Category</label>
-            <select id="category" class="form-control">
+            <select id="category" v-model="category_id" class="form-control">
               <option value="" disabled selected>Choose your option</option>
-              <option v-for="category in categories" :value="category.id">{{ category.name }}</option>
+              <option :selected="category.id == category_id" v-for="category in categories" :value="category.id">{{ category.name }}</option>
             </select>
           </div>
-          <div class="input-field col s6">
-            <label for="title">Password</label>
-            <input placeholder="password" id="password" v-model="key" type="Password" class="form-control">
+          <div class="col">
+            <label for="category">Edit a post</label>
+            <div class="row container">
+              <input placeholder="post id" min="0" id="edit" v-model="inputID" type="number" class="col-4 form-control">
+              <button @click="loadEditPost" class="col-2 mx-1 btn btn-info">edit</button>
+              <button @click="clear" class="col-2 mx-2 btn btn-dark">clear</button>
+              <button @click="clear" class="col-2 btn btn-danger">delete</button>
+            </div>
           </div>
         </div>
-    
+
         <br>
+
         <div class="row">
           <div class="col">
             <textarea 
@@ -117,7 +119,8 @@
 
         <br>  
         <div>
-          <button @click="createPost" class="btn btn-success">Create</button>
+          <button v-if="id < 0" @click="createPost" class="btn btn-success">Create</button>
+          <button v-else @click="createPost" class="btn btn-warning">Update</button>
         </div>
       </div>
     </div>
